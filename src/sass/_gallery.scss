@@ -1,0 +1,34 @@
+#search-form {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+input {
+  display: inline-block;
+  width: 250px;
+}
+.load-more {
+  display: block;
+  margin: 0 auto;
+}
+.is-hidden {
+  visibility: none;
+  display: none;
+}
+.sorry {
+  color: red;
+  padding: 10px;
+  margin: 0 auto;
+}
+.info {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+}
+.gallery {
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
