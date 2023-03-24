@@ -20,16 +20,22 @@ function getPictures(query,_page) {
 });
   console.log("рядок запиту ",`${BASE_URL}?${searchParams}`);
    return fetch(`${BASE_URL}?${searchParams}`) 
-    .then(response => {
-      if (!response.ok) {
+     .then(response => {
+       if (!response.ok) {
         Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
         return;
       }
-      else
-        return response.json();
-       })
+    })
+     .then((response) => {
+       if (response.total > 500) {
+         Notiflix.Notify.info("Too many matches found. Please enter a more specific notion.");
+         return;
+       }
+      console.log("response.hits.json() ", response.hits.json());
+      return response.json();
+     })
      .catch(error => {
-       Notiflix.Notify.failure(error);
+       Notiflix.Notify.failure(error.message);
       });
 }
  

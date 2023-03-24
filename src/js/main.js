@@ -2,6 +2,7 @@ import "simplelightbox/dist/simple-lightbox.min.css";//звязок з css фа�
 import SimpleLightbox from "simplelightbox" //звязок з бібліотекою simplelightbox встановленою через npm install
 import "simplelightbox/dist/simple-lightbox.min.css";//звязок з css файлом simplelightbox
 import Notiflix from "notiflix";
+import debounce from "lodash.debounce";
 import getPictures from "./getPictures";
 import refs from "./refs";
 let _page = 1;
@@ -9,21 +10,27 @@ let _page = 1;
 refs.loadButton.classList.add('is-hidden');
 refs.form.addEventListener("submit", onSearch);
 
-function onSearch(event) { 
-  //console.log(event.currentTarget);
-  event.preventDefault();
-  const { elements: { searchQuery, btn } } = event.currentTarget;
- 
-  if (btn.nodeName !== "BUTTON") return;
-  const query = searchQuery.value.trim();//вміст input = рядок запиту
-  
-  if (query === "") { 
+const debouncedInput = debounce(resetScreen, 1000,{leading:true,trailing:false});
+refs.input.addEventListener('input', debouncedInput);
+
+function resetScreen(e) {
+   const searchQuery = e.target.value.trim();
+  if (searchQuery === "") { 
     resetGallery(); //якщо користувач очистив input чистимо галерею
     return;
   }
+  
+};
+function onSearch(event) { 
+ 
+  event.preventDefault();
+  const { elements: { searchQuery} } = event.currentTarget;
+  const query = searchQuery.value.trim();//вміст input = рядок запиту
+  
   getPictures(query, _page)
-    .then((results) => {
-      const totalPages = parseInt(results.totalHits)/ searchParams.per_page;
+    .then((result) => {
+      //console.log("data ", data);
+      const totalPages = parseInt(result.totalHits)/ searchParams.per_page;
       console.log("_page", _page);
       console.log(" totalPages", totalPages);
       if (totalPages > 1) {
@@ -37,7 +44,7 @@ function onSearch(event) {
         refs.gallery.insertAdjacentHTML("beforeend", "<p class='sorry'>We're sorry, but you've reached the end of search results</p>");
         _page = 0;
       }
-      let markUpPage = results.hits.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) =>
+      let markUpPage = result.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) =>
         `<div class="photo-card">
            <a class="gallery__item" href = ${largeImageURL} >
                <img src="${webformatURL}" alt="${tags}" loading="lazy" />
@@ -55,7 +62,7 @@ function onSearch(event) {
     
       
       })
-    .catch(error => { Notiflix.Notify.failure(error); });
+    .catch(error => { console.log(error.message); }); //Notiflix.Notify.failure
 };
 
 //let gallery = new SimpleLightbox('.gallery div a', { showCounter:false,captionsData:'alt' , captionDelay: 250 ,});
