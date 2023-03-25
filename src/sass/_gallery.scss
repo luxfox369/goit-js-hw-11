@@ -10,7 +10,10 @@ input {
 }
 .load-more {
   display: block;
+  width: 100px;
+  height: 50px;
   margin: 0 auto;
+  margin-bottom: 20px;
 }
 .is-hidden {
   visibility: none;
@@ -24,11 +27,13 @@ input {
 .info {
   padding: 10px;
   display: flex;
+  gap: 5px;
   justify-content: center;
 }
 .gallery {
   padding: 10px;
   display: flex;
+  gap: 10px;
   flex-wrap: wrap;
-  justify-content: space-around;
+  justify-content: center;
 }
