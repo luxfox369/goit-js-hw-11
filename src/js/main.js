@@ -2,7 +2,7 @@ import "simplelightbox/dist/simple-lightbox.min.css";//звязок з css фа�
 import SimpleLightbox from "simplelightbox" //звязок з бібліотекою simplelightbox встановленою через npm install
 import "simplelightbox/dist/simple-lightbox.min.css";//звязок з css файлом simplelightbox
 import Notiflix from "notiflix";
-import refs from "./refs";
+import { refs } from "./refs";
 import ApiService from "./getPictures";
 
 const apiService = new ApiService;
