@@ -41,7 +41,7 @@ function render(result) {
   }
  //в сервісі якшо запит виконано  то page +=1 для наступного запиту
    if (apiService.page-1 === 1 )  
-  Notiflix.Notify.info(`We have found ${totalHits} items  that are ${groups} page(s) of photos on your request`);
+  Notiflix.Notify.info(`Hooray! We found  ${totalHits} images.Total ${groups} page(s)per${apiService.per_page} photos on your request`);
    else
   Notiflix.Notify.info(`*** it's  ${apiService.page - 1} / ${groups} ***`);  
   
@@ -66,7 +66,8 @@ function render(result) {
      .join("");
   //додаємо розмітку порції в DOM       
   refs.gallery.insertAdjacentHTML("beforeend", markUpPage); //рендеримо сторінку
-  let gallery = new SimpleLightbox('.gallery div a', { showCounter: false, captionsData: 'alt', captionDelay: 250, });
+  let gallery = new SimpleLightbox('.gallery div a', { captionsData: 'alt', captionDelay: 250, });// showCounter: false,
+  gallery.refresh();
 }
 
 function resetGallery() {
