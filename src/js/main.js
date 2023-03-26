@@ -14,36 +14,39 @@ refs.btnLoadMore.addEventListener('click', moreLoad);
 
 function onSearch(e) { //при натисненні search
   e.preventDefault();  //відміняємо відправку форми
-  resetGallery(); //очищаємо розмітку
-  isHiddenBottom();
+  resetGallery(); //очищаємо розмітку галереї
+  isHiddenBottom(); //очищаемо все під галереєю
   apiService.resetPage(); //скидаємо лічильник сторінок сервісі
  const searchValue = e.currentTarget.searchQuery.value.trim();
   if (searchValue) {
     apiService.query = searchValue;//query = input.value
-    apiService.getPictures().then(result => {
-      if (result.total > 0) render(result); //якщо масив є то fetch img отриманий результат рендеримо
-      else Notiflix.Notify.info("NO images in stories matching to your request. Please try again");
-      })
+
+    apiService.getPictures().then(data => {
+      const { totalHits } = data;
+      console.log("data", data);
+      if ( totalHits  > 0) render(data); //якщо масив є то fetch img отриманий результат рендеримо
+      else Notiflix.Notify.info("Sorry, there are no images matching to your request. Please try again");
+          })
     .catch(error => {Notiflix.Notify.failure(error.message)}) 
   }
   else Notiflix.Notify.info("Please type something for searching!");
 }
 function moreLoad() {
-   apiService.getPictures().then(data => {render(data);})
+    apiService.getPictures().then(data => {render(data);})
+  
 }
 
-function render(result) {
-  const { totalHits, hits } = result;
-
+function render(data) {
+  const { totalHits, hits } = data;
   const groups = Math.ceil(totalHits / apiService.per_page); //округ до найбільшого цілого
   if (groups > 1) {
     refs.btnLoadMore.classList.remove('is-hidden');
   }
  //в сервісі якшо запит виконано  то page +=1 для наступного запиту
    if (apiService.page-1 === 1 )  
-  Notiflix.Notify.info(`Hooray! We found  ${totalHits} images.Total ${groups} page(s)per${apiService.per_page} photos on your request`);
+  Notiflix.Notify.info(`Hooray! We found ${totalHits} images.It's ${groups} page(s) per ${apiService.per_page} photos on your request`);
    else
-  Notiflix.Notify.info(`*** it's  ${apiService.page - 1} / ${groups} ***`);  
+  Notiflix.Notify.info(`  ${apiService.page - 1} / ${groups} `);  
   
   if (apiService.page > groups && hits.length>0){
     refs.btnLoadMore.classList.add('is-hidden');
@@ -66,7 +69,7 @@ function render(result) {
      .join("");
   //додаємо розмітку порції в DOM       
   refs.gallery.insertAdjacentHTML("beforeend", markUpPage); //рендеримо сторінку
-  let gallery = new SimpleLightbox('.gallery div a', { captionsData: 'alt', captionDelay: 250, });// showCounter: false,
+  let gallery = new SimpleLightbox('.gallery  a', { captionsData: 'alt', captionDelay: 250, });// showCounter: false,
   gallery.refresh();
 }
 

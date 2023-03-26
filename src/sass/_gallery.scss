@@ -12,9 +12,10 @@ input {
   font-weight: 600;
   display: block;
   width: 150px;
-  height: 70px;
+  height: 50px;
   margin: 0 auto;
   margin-bottom: 20px;
+  border-radius: 50%;
 }
 .is-hidden {
   visibility: none;
@@ -24,8 +25,9 @@ input {
   text-align: center;
   margin: 0 auto;
   font-size: 20px;
+  font-weight: 600;
   font-style: italic;
-  color: red;
+  color: rgba(30, 168, 172, 0.76);
   padding: 10px;
 }
 
