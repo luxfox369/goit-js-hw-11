@@ -23,7 +23,7 @@ export default class ApiService {
       page: this.page,
       per_page: this.per_page,
     });
-    console.log("this.page до запиту ", this.page);
+    // console.log("this.page до запиту ", this.page);
 
     try {
       const response = await axios.get(`${BASE_URL}?${searchParams}`);
@@ -34,7 +34,7 @@ export default class ApiService {
         return;
       }
       this.page += 1;
-      console.log("this.page після запиту ", this.page);
+      // console.log("this.page після запиту ", this.page);
       return data;
     }
       catch (error) { 

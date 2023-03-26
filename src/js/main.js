@@ -1,31 +1,32 @@
-import "simplelightbox/dist/simple-lightbox.min.css";//звязок з css файлом simplelightbox
 import SimpleLightbox from "simplelightbox" //звязок з бібліотекою simplelightbox встановленою через npm install
 import "simplelightbox/dist/simple-lightbox.min.css";//звязок з css файлом simplelightbox
 import Notiflix from "notiflix";
 import { refs } from "./refs";
-import ApiService from "./getPictures";
+import ApiService from "./getPictures"; //клас сервіс пошуку на https://pixabay.com/api
 
-const apiService = new ApiService;
+const apiService = new ApiService; //екземпляр класу сервісу
 
-isHiddenBottom(); //доданий клас is-hidden
+isHiddenBottom(); //доданий клас is-hidden елементам після галереї
 
 refs.form.addEventListener("submit", onSearch);
 refs.btnLoadMore.addEventListener('click', moreLoad);
+
+
 
 function onSearch(e) { //при натисненні search
   e.preventDefault();  //відміняємо відправку форми
   resetGallery(); //очищаємо розмітку галереї
   isHiddenBottom(); //очищаемо все під галереєю
   apiService.resetPage(); //скидаємо лічильник сторінок сервісі
- const searchValue = e.currentTarget.searchQuery.value.trim();
+ const searchValue = e.currentTarget.searchQuery.value.trim(); //відкидаємо пробіли
   if (searchValue) {
-    apiService.query = searchValue;//query = input.value
+    apiService.query = searchValue;//заносимо у властивість query екземпляра  те шо в input.value
 
-    apiService.getPictures().then(data => {
+    apiService.getPictures().then(data => { //відправляємо запит
       const { totalHits } = data;
-      console.log("data", data);
-      if ( totalHits  > 0) render(data); //якщо масив є то fetch img отриманий результат рендеримо
-      else Notiflix.Notify.info("Sorry, there are no images matching to your request. Please try again");
+     // console.log("data", data);
+      if ( totalHits  > 0) render(data); //якщо масив є то  рендеримо
+      else Notiflix.Notify.failure("Sorry, there are no images matching to your request. Please try again");
           })
     .catch(error => {Notiflix.Notify.failure(error.message)}) 
   }
@@ -42,17 +43,17 @@ function render(data) {
   if (groups > 1) {
     refs.btnLoadMore.classList.remove('is-hidden');
   }
- //в сервісі якшо запит виконано  то page +=1 для наступного запиту
-   if (apiService.page-1 === 1 )  
-  Notiflix.Notify.info(`Hooray! We found ${totalHits} images.It's ${groups} page(s) per ${apiService.per_page} photos on your request`);
-   else
-  Notiflix.Notify.info(`  ${apiService.page - 1} / ${groups} `);  
+  //в сервісі якшо запит виконано успішно то page +=1 для наступного запиту
+  if (apiService.page - 1 === 1)
+    Notiflix.Notify.info(`Hooray! We found ${totalHits} images.It's ${groups} page(s) per ${apiService.per_page} photos on your request`);
+  else
+    Notiflix.Notify.info(`  ${apiService.page - 1} / ${groups} `);
   
-  if (apiService.page > groups && hits.length>0){
+  if (apiService.page > groups && hits.length > 0) {
     refs.btnLoadMore.classList.add('is-hidden');
     refs.pSorry.classList.remove("is-hidden");
-    }
-  //розмічаємо сторіку на основі даних отриманої порції  
+  }
+  //розмічаємо сторіку на основі реструктуризованих data в кіл-ті <= this.per_page  
   let markUpPage = hits.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) =>
     `<div class="photo-card">
            <a class="gallery__item" href = ${largeImageURL} >
@@ -66,10 +67,25 @@ function render(data) {
                 </div>
            
       </div>`)
-     .join("");
+    .join("");
   //додаємо розмітку порції в DOM       
   refs.gallery.insertAdjacentHTML("beforeend", markUpPage); //рендеримо сторінку
-  let gallery = new SimpleLightbox('.gallery  a', { captionsData: 'alt', captionDelay: 250, });// showCounter: false,
+  //підтягувати фотки вверх коли loadMore
+  if (apiService.page > 2) {
+  //плавне прокручування сторінки після запиту і відтворення кожної наступної групи зображень.
+  //Метод firstElementChild.getBoundingClientRect() повертає height  1-го div "photo-card" в gallery
+  // та його позицію відносно viewport
+  const { height: cardHeight } = document.querySelector(".gallery").firstElementChild.getBoundingClientRect();
+  window.scrollBy({ top: cardHeight * 2, behavior: "smooth", }); //плавно скролить вверх на 2*(height div "photo-card")px
+  //Прокручує документ на вказані величини x,y. window.scrollBy(X, Y);
+  //or scrollBy(options) 
+  //options - a dictionary containing the following parameters:
+  //top-specifies the number of pixels along the Y axis to scroll the window or element.
+  //left-specifies the number of pixels along the X axis to scroll the window or element.
+  //behavior-specifies whether the scrolling should animate smoothly (smooth),
+  // happen instantly in a single jump(instant), or let the browser choose (auto, default).
+}
+  const gallery = new SimpleLightbox('.gallery  a', { captionsData: 'alt', captionDelay: 250, });// showCounter: false,
   gallery.refresh();
 }
 

@@ -5,5 +5,5 @@ export const refs = {
     gallery: document.querySelector(".gallery"),
     btnLoadMore: document.querySelector(".load-more"),
     pSorry: document.querySelector(".sorry"),
-    card:document.querySelector(".photo-card"),
+    
 }
