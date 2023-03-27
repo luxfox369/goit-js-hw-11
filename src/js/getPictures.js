@@ -1,10 +1,12 @@
 import Notiflix from "notiflix";
 import axios from 'axios';
 
+import refs from "./refs";
 let BASE_URL = '';
 let API_KEY = '';
 let searchParams = '';
 export let apiService = {};
+
 
 //https://pixabay.com/api/?key=27773826-7d05f868daf01d5002e50610b&q=yellow+flowers&image_type=photo
 //const searchParams = `?key=${Authorization}&q=${query}&image_type=${image_type}&orientation=${orientation}&safesearch=${safesearch}&page=${page}&per_page=${per_page}`; //отримуємо per_page к-ть
@@ -14,6 +16,7 @@ export default class ApiService {
     this.searchQuery = '';
     this.page = 1;
     this.per_page = 40;
+    this.totalHits = 0;
     this.url = `${BASE_URL}?${searchParams}`; //  тут path ступної сторінки для нескінченого скрола
   } 
   
@@ -27,26 +30,31 @@ export default class ApiService {
       image_type: "photo",
       orientation: "horizontal",
       safesearch: true,
-       per_page: this.per_page,
-       page: this.page,
+      per_page: this.per_page,
+      page: this.page,
     
      });
     this.url = `${BASE_URL}?${searchParams}`; //кожен  запит url  записується в this.url
-    console.log("this.page до запиту ", this.page);
-    console.log("this.url  до запиту", this.url);
+    //console.log("this.page до запиту ", this.page);
+    //console.log("this.url  до запиту", this.url);
      
     try {
       const response = await axios.get(this.url );
       const { data, status } = response;
+      //console.log("response from try ",response);
       if (status !== 200 ) { 
         const myError =  new Error("Sorry, something went wrong.Please try again!");
         Notiflix.Notify.failure(myError);
         return;
       }
+      //console.log("data from api", data);
+      //const { totalHits } = data;
+      this.totalHits = data.totalHits;
       this.page += 1;// сторіка наступного запиту у разі успішного виконання
-      console.log("this.page після запиту ", this.page);
-      this.url = `${BASE_URL}?${searchParams}`;  //перезібрати url
-      console.log("this.url після page +1", this.url);
+      //console.log("this.page після запиту ", this.page);
+      //this.url = `${BASE_URL}?${searchParams}`;  //перезібрати url
+      //console.log("this.url після запиту", this.url);
+      //console.log("data from try ",data);
       return data;
     }
     catch (error) { 
@@ -75,8 +83,10 @@ export default class ApiService {
   set query(newQuery) {
     this.searchQuery = newQuery;
   }
-  resetPage() {
+  resetSevice() {
     this.page = 1;
+    this.totalHits = 0;
+    this.url = '';
   }
 
 }

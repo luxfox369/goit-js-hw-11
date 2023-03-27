@@ -1,16 +1,38 @@
+.container {
+  position: sticky;
+  top: 0;
+  left: 0;
+  height: 70px;
+  background-color: rgb(218, 132, 66);
+}
 #search-form {
   padding: 20px;
   display: flex;
   justify-content: center;
   gap: 5px;
 }
-#infScroll {
-  width: 10px;
-}
 input {
   display: inline-block;
   width: 250px;
+  height: 25px;
+  border: 1px #fff solis;
 }
+#submit {
+  display: inline-block;
+  // width: 35px;
+  height: 25px;
+  border: 1px #fff solis;
+}
+
+#infScroll {
+  border-radius: 50%;
+  display: inline-block;
+  width: 25px;
+}
+label {
+  color: #fff;
+}
+
 .load-more {
   font-weight: 600;
   display: block;

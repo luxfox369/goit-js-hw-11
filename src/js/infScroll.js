@@ -2,15 +2,23 @@ import InfiniteScroll from "infinite-scroll";
 //import ApiService from "./getPictures"; //клас сервіс пошуку на https://pixabay.com/api
 import { apiService } from "./main";
 import { refs } from "./refs";
+import render from "./main";
 
 export default function onScroll() {
-    apiService.page = 2;
-    let _url = apiService.url;
-    refs.cards = document.querySelectorAll(".photo-card");
-    //console.log("apiService.url", apiService.url);
-     let infScroll = new InfiniteScroll('.gallery', {
+    
+    //костиль
+    let _url = ""; // для path in infScroll
+    let index = apiService.url.indexOf("page=1");
+    if (index > -1) _url = `${apiService.url.slice(0, index)}page=2`;
+    else _url = apiService.url;
+
+    console.log("_url", _url);
+    
+    refs.cards = document.querySelectorAll(".photo-card"); // всі photo-card які йдуть в контейнер gallery
+    
+    let infScroll = new InfiniteScroll('.gallery', {
         // defaults listed
-        path: apiService.url,
+        path: _url,
         // REQUIRED. Determines the URL for the next page
         // Set to selector string to use the href of the next page's link
         // path: '.pagination__next'
@@ -34,11 +42,11 @@ export default function onScroll() {
         // sets custom settings for the fetch() request
         // for setting headers, cors, or POST method
         // can be set to an object, or a function that returns an object
-        onInit: function () {
-            apiService.page = 2;
-            _url = apiService.url;
-            console.log('з onInit _url'._url);
-        },
+        // onInit: function () {
+        //     apiService.page = 2;
+        //     _url = apiService.url;
+        //     console.log('з onInit _url'._url);
+        // },
         // called on initialization
         // useful for binding events on init
         // onInit: function() {
@@ -49,16 +57,23 @@ export default function onScroll() {
     
     function fetchInfScrloll() {
         {
-            if (apiService.page > 2) {
-                _url = apiService.url;
-                return fetch(_url);
-            }
-            apiService.page += 1;    // сторіка наступного запиту                  
-            return apiService;
+         const   fetchOption = {
+            _url,
+         }
+            return fetchOption;
+
+            // сторіка наступного запиту 
+            // apiService.getPictures().then(data => { render(data); })
+            //     .catch(error => { console.log(error) })
+           
+            // if (apiService.page > Math.ceil(apiService.totalHits / apiService.per_page)) {
+            //     refs.pSorry.classList.remove("is-hidden");
+            // }
+            // return;
         }
         // sets custom settings for the fetch() request
         // for setting headers, cors, or POST method
         // can be set to an object, or a function that returns an object
         
     }
-} 
+}
