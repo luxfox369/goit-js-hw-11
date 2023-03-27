@@ -5,5 +5,6 @@ export const refs = {
     gallery: document.querySelector(".gallery"),
     btnLoadMore: document.querySelector(".load-more"),
     pSorry: document.querySelector(".sorry"),
-    
+    infScrol:document.querySelector("#infScroll"),
+     
 }
