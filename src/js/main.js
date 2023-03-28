@@ -35,7 +35,7 @@ function onSearch(e) { //при натисненні search
         render(data);  //якщо масив є то  рендеримо
       else Notiflix.Notify.failure("Sorry, there are no images matching to your request. Please try again");
      })
-    .catch(error => {console.log(error)}) //Notiflix.Notify.failure(error.message)
+    .catch(error => {Notiflix.Notify.failure(error.message)}) //
   }
   else Notiflix.Notify.info("Please type something for searching!");
 }
@@ -86,7 +86,7 @@ export function render(data) {
   refs.gallery.insertAdjacentHTML("beforeend", markUpPage); //додаємо групу в DOM
   
   //*******підтягувати фотки вверх методом window.scrollBy коли loadMore
-  if (!refs.infScrol.checked  && apiService.page > 2) {
+  if (!refs.infScrol.checked  && apiService.page > 2) { //підтягувати фотки до гори на 1 рядок якщо це loadMore
     //плавне прокручування сторінки після запиту і відтворення кожної наступної групи зображень.
     //Метод firstElementChild.getBoundingClientRect() повертає height  1-го div "photo-card" в gallery
     // та його позицію відносно viewport
