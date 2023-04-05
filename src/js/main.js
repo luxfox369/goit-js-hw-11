@@ -3,19 +3,13 @@ import "simplelightbox/dist/simple-lightbox.min.css";//звязок з css фа�
 import Notiflix from "notiflix";
 import { refs } from "./refs";
 import ApiService from "./getPictures"; //сервіс пошуку на https://pixabay.com/api з бесплатним ключем 
-import onScroll from "./infScroll";
 export let apiService = '';
-
-
-isHiddenBottom(); //доданий клас is-hidden елементам після галереї
 
 refs.form.addEventListener("submit", onSearch);
 refs.btnLoadMore.addEventListener('click', moreLoad);
-//*******нескінчений скролл https://www.npmjs.com/package/infinite-scroll?activeTab=code
-if (refs.infScrol.checked  ) { 
-    window.addEventListener('scroll',onScroll);
-  }
+isHiddenBottom(); //ховаємо все під галереєю
 
+  
 function onSearch(e) { //при натисненні search
   e.preventDefault();  //відміняємо відправку форми
   resetGallery(); //очищаємо розмітку галереї
@@ -23,10 +17,11 @@ function onSearch(e) { //при натисненні search
   apiService = new ApiService; //при події ініціалізуємо новий екземпляр сервісу
   apiService.resetSevice(); //скидаємо всі дані(page,url,totalHits) в сервісі 
  
+ 
  const searchValue = e.currentTarget.searchQuery.value.trim(); //відкидаємо пробіли
   if (searchValue) {
+    if (refs.infScrol.checked)   infinityScroll();
     apiService.query = searchValue;//заносимо у властивість query екземпляра  те шо в input.value
-
     apiService.getPictures().then(data => { //відправляємо запит
       //  console.log("data from then of main", data);
       // const { totalHits } = data;
@@ -35,7 +30,7 @@ function onSearch(e) { //при натисненні search
         render(data);  //якщо масив є то  рендеримо
       else Notiflix.Notify.failure("Sorry, there are no images matching to your request. Please try again");
      })
-    .catch(error => {Notiflix.Notify.failure(error.message)}) //
+    .catch(error => {console.log(error)}) //Notiflix.Notify.failure(error.message)
   }
   else Notiflix.Notify.info("Please type something for searching!");
 }
@@ -44,28 +39,37 @@ function moreLoad() {
   
 }
 
-export function render(data) {
+ function infinityScroll() {
+  const observer = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+     // console.log("entry.target ",entry.target);
+      console.log("entry.isIntersecting ", entry.isIntersecting);
+      moreLoad();
+      }
+  }, {rootMargin:"400px"} //  коли від viewport 400px до btnLoadMore
+   )
+  observer.observe(refs.btnLoadMore);
+ 
+};
+let groups = 0;
+ function render(data) {
   const { totalHits, hits } = data;
-  const groups = Math.ceil(apiService.totalHits / apiService.per_page); //к-ть сторінок округ до найбільшого цілого 
-  
-  // ***для load-more
-  if (!refs.infScrol.checked) {
-    if (groups > 1) {
+   groups = Math.ceil(apiService.totalHits / apiService.per_page); //к-ть сторінок округ до найбільшого цілого
+   if (apiService.page <= groups) {
       refs.btnLoadMore.classList.remove('is-hidden');
-    }
-  }
-  //остання сторінка і є фотки ,тоді load-more невидно+показано фінальний мемедж
+   }
+   //остання сторінка і є фотки ,тоді load-more невидно+показано фінальний мемедж
   if (apiService.page > groups && hits.length > 0) {
     refs.btnLoadMore.classList.add('is-hidden');
     refs.pSorry.classList.remove("is-hidden");
-  }
+   }
+   
   //*****
   // якшо запит виконано успішно то в сервісі page +=1 для наступного запиту
   if (apiService.page === 2)  //це перший показ
     Notiflix.Notify.info(`Hooray! We found ${totalHits} photos .It's flow of ${groups} page(s)`);
   //кожна порція меседж
-  // if (!refs.infScrol.checked)
-    Notiflix.Notify.info(`  ${apiService.page - 1} / ${groups} `);
+   if (!refs.infScrol.checked)   Notiflix.Notify.info(`  ${apiService.page - 1} / ${groups} `);
   
   //розмічаємо сторіку на основі реструктуризованих data в кіл-ті <= this.per_page  
   let markUpPage = hits.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) =>
@@ -86,7 +90,7 @@ export function render(data) {
   refs.gallery.insertAdjacentHTML("beforeend", markUpPage); //додаємо групу в DOM
   
   //*******підтягувати фотки вверх методом window.scrollBy коли loadMore
-  if (!refs.infScrol.checked  && apiService.page > 2) { //підтягувати фотки до гори на 1 рядок якщо це loadMore
+  if (apiService.page > 2 && !refs.infScrol.checked) { //  && 
     //плавне прокручування сторінки після запиту і відтворення кожної наступної групи зображень.
     //Метод firstElementChild.getBoundingClientRect() повертає height  1-го div "photo-card" в gallery
     // та його позицію відносно viewport
@@ -113,4 +117,6 @@ function resetGallery() {
 function isHiddenBottom() {
 refs.btnLoadMore.classList.add('is-hidden');
 refs.pSorry.classList.add("is-hidden");
-  }
+}
+  
+//*******нескінчений скролл https://www.npmjs.com/package/infinite-scroll?activeTab=code

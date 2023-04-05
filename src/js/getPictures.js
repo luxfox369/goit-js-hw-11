@@ -5,7 +5,7 @@ import refs from "./refs";
 let BASE_URL = '';
 let API_KEY = '';
 let searchParams = '';
-export let apiService = {};
+export let apiService = {} ;
 
 
 //https://pixabay.com/api/?key=27773826-7d05f868daf01d5002e50610b&q=yellow+flowers&image_type=photo
@@ -35,9 +35,7 @@ export default class ApiService {
     
      });
     this.url = `${BASE_URL}?${searchParams}`; //кожен  запит url  записується в this.url
-    //console.log("this.page до запиту ", this.page);
-    //console.log("this.url  до запиту", this.url);
-     
+         
     try {
       const response = await axios.get(this.url );
       const { data, status } = response;
@@ -47,14 +45,11 @@ export default class ApiService {
         Notiflix.Notify.failure(myError);
         return;
       }
-      //console.log("data from api", data);
-      //const { totalHits } = data;
       this.totalHits = data.totalHits;
-      this.page += 1;// сторіка наступного запиту у разі успішного виконання
-      //console.log("this.page після запиту ", this.page);
-      //this.url = `${BASE_URL}?${searchParams}`;  //перезібрати url
-      //console.log("this.url після запиту", this.url);
-      //console.log("data from try ",data);
+      // сторіка наступного запиту у разі успішного виконання
+      this.page += 1;
+      this.url = `${BASE_URL}?${searchParams}` //url  наступного рядка
+      
       return data;
     }
     catch (error) { 

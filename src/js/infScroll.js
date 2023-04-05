@@ -42,11 +42,9 @@ export default function onScroll() {
         // sets custom settings for the fetch() request
         // for setting headers, cors, or POST method
         // can be set to an object, or a function that returns an object
-        // onInit: function () {
-        //     apiService.page = 2;
-        //     _url = apiService.url;
-        //     console.log('з onInit _url'._url);
-        // },
+        onInit: function () {
+           _url = apiService.url;
+        },
         // called on initialization
         // useful for binding events on init
         // onInit: function() {
