@@ -120,3 +120,9 @@ refs.pSorry.classList.add("is-hidden");
 }
   
 //*******нескінчений скролл https://www.npmjs.com/package/infinite-scroll?activeTab=code
+function saveTotalPages(number) {
+    save(TOTAL_KEY, number);
+}   
+function loadTotalPages() {
+    load(TOTAL_KEY);
+}      
